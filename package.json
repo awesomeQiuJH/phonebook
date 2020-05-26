@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:ui": "rm -rf build && cd ../../Gitee/fullstack/part2/phonebook && npm run build --prod && cp -r build ../../../../Github/phonebook/",
+    "deploy": "git push heroku master",
+    "deplay:full": "npm run build:ui && git add . && git commit -m UIbuild && npm run deploy",
+    "logs:prod": "heroku logs --tail"
   },
   "keywords": [
     "express.js"
