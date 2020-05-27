@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build:ui": "rm -rf build && cd ../../Gitee/fullstack/part2/phonebook && npm run build --prod && cp -r build ../../../../Github/phonebook/",
-    "deploy": "git push heroku master",
+    "deplay": "git push heroku master",
     "deplay:full": "npm run build:ui && git add . && git commit -m UIbuild && npm run deploy",
     "logs:prod": "heroku logs --tail"
   },
