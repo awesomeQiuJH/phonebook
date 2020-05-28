@@ -21,10 +21,10 @@ app.use(morgan((tokens, req, res) => {
     ].join(' ')
 }))
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res, next) => {
     Phonebook.find().then(r => {
         res.json(r)
-    })
+    }).catch(err => next(err))
 
 })
 
@@ -33,7 +33,7 @@ app.get('/info', (req, res) => {
     res.send(text)
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
     const id = req.params.id
     Phonebook.findById(id).then(r => {
         if (r) {
@@ -41,7 +41,7 @@ app.get('/api/persons/:id', (req, res) => {
         } else {
             res.status(404).end()
         }
-    })
+    }).catch(err => next(err))
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -53,7 +53,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
         .catch(err => next(err))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body
 
     if (body.name === undefined || body.number === undefined) {
@@ -65,13 +65,14 @@ app.post('/api/persons', (req, res) => {
     phonebook.save().then(r => {
         res.json(r)
     })
+        .catch(error => next(error))
 })
 
-app.put('/api/persons/:id', (req, res) => {
+app.put('/api/persons/:id', (req, res, next) => {
     const body = req.body
     const id = req.params.id
 
-    Phonebook.findByIdAndUpdate(id, body, { new: true }).then(r => res.json(r))
+    Phonebook.findByIdAndUpdate(id, body, { new: true, runValidators: true }).then(r => res.json(r)).catch(err => next(err))
 })
 
 const errorHandler = (error, request, response, next) => {
@@ -79,6 +80,8 @@ const errorHandler = (error, request, response, next) => {
 
     if (error.name === 'CastError' && error.kind === 'ObjectId') {
         return response.status(400).send({ error: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).send({ error: error.message })
     }
 
     next(error)
