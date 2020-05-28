@@ -1,4 +1,5 @@
 require('dotenv').config()
+const process = require('process')
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
@@ -29,7 +30,7 @@ app.get('/api/persons', (req, res, next) => {
 })
 
 app.get('/info', (req, res) => {
-    const text = `Phonebook has info for ${persons.length} people. <br /> <p>${new Date()}</p>`
+    const text = `Phonebook has info for  people. <br /> <p>${new Date()}</p>`
     res.send(text)
 })
 
@@ -47,7 +48,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 app.delete('/api/persons/:id', (req, res, next) => {
     const id = req.params.id
     Phonebook.findByIdAndRemove(id)
-        .then(r => {
+        .then(() => {
             res.status(204).end()
         })
         .catch(err => next(err))
